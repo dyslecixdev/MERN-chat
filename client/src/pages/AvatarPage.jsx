@@ -2,16 +2,30 @@ import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Container, Box, Avatar, Typography, Button, Modal, ButtonGroup} from '@mui/material';
+import {
+	useTheme,
+	Container,
+	Box,
+	Avatar,
+	Typography,
+	Button,
+	Modal,
+	ButtonGroup
+} from '@mui/material';
 import {Cached} from '@mui/icons-material';
 
 import axios from 'axios';
 
 import {updateUserStart, updateUserSuccess, updateUserFailure} from '../redux/userRedux';
 
+import {tokens} from '../theme';
+
 function AvatarPage() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
 
 	const user = useSelector(state => state.user.currentUser);
 	const {isFetching} = useSelector(state => state.user);
@@ -71,9 +85,11 @@ function AvatarPage() {
 				alignItems: 'center'
 			}}
 		>
-			<Typography variant='h4' sx={{textAlign: 'center'}}>
+			<Typography sx={{fontSize: {xs: '1.5rem', md: '2.5rem'}, textAlign: 'center'}}>
 				Please choose an avatar
 			</Typography>
+
+			{/* Avatar images */}
 			<Box
 				sx={{
 					width: {xs: '100%', sm: '75%', md: '55%'},
@@ -90,15 +106,25 @@ function AvatarPage() {
 						sx={{
 							width: {xs: 60, sm: 100},
 							height: {xs: 60, sm: 100},
-							cursor: 'pointer'
+							cursor: 'pointer',
+							'&:hover': {
+								transform: 'scale(1.1)'
+							}
 						}}
 					/>
 				))}
 			</Box>
-			<Button variant='contained' onClick={() => setReload(!reload)} endIcon={<Cached />}>
-				New Avatars
+
+			<Button
+				variant='contained'
+				color='warning'
+				onClick={() => setReload(!reload)}
+				endIcon={<Cached />}
+			>
+				<Typography variant='h5'>New Avatars</Typography>
 			</Button>
 
+			{/* Modal pop-up to confirm avatar image */}
 			<Modal open={openModal} onClose={() => setOpenModal(false)}>
 				<Box
 					sx={{
@@ -117,12 +143,12 @@ function AvatarPage() {
 						transform: 'translate(-50%, -50%)',
 						display: 'flex',
 						flexDirection: 'column',
-						justifyContent: 'space-between',
-						background: 'white',
+						justifyContent: 'space-evenly',
+						background: colors.primary[500],
 						border: '2px solid #000'
 					}}
 				>
-					<Typography variant='h6' component='h2'>
+					<Typography variant='h5' component='h2'>
 						Are you sure you want this avatar?
 					</Typography>
 					<ButtonGroup
@@ -137,7 +163,7 @@ function AvatarPage() {
 					>
 						<Button
 							type='button'
-							color='error'
+							color='success'
 							onClick={updateUserAvatar}
 							disabled={isFetching}
 						>
@@ -145,6 +171,7 @@ function AvatarPage() {
 						</Button>
 						<Button
 							type='button'
+							color='error'
 							onClick={() => setOpenModal(false)}
 							disabled={isFetching}
 						>

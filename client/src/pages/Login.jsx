@@ -2,13 +2,18 @@ import {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Box, TextField, Button, Paper, Typography} from '@mui/material';
+import {useTheme, Box, TextField, Button, Paper, Typography} from '@mui/material';
 
 import axios from 'axios';
 
 import {loginStart, loginSuccess, loginFailure} from '../redux/userRedux';
 
+import {tokens} from '../theme';
+
 function Login() {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
+
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
@@ -58,7 +63,7 @@ function Login() {
 					display: 'flex',
 					flexDirection: 'column',
 					gap: '2rem',
-					background: 'white'
+					background: colors.primary[800]
 				}}
 			>
 				{errorMessage && (
@@ -69,6 +74,7 @@ function Login() {
 				<TextField
 					label='Username'
 					type='username'
+					color='info'
 					required
 					value={username}
 					onChange={e => setUsername(e.target.value)}
@@ -76,17 +82,21 @@ function Login() {
 				<TextField
 					label='Password'
 					type='password'
+					color='info'
 					required
 					value={password}
 					onChange={e => setPassword(e.target.value)}
 				/>
 				{/* Button cannot be clicked while isFetching is true in redux */}
-				<Button variant='contained' type='submit' disabled={isFetching}>
+				<Button variant='contained' color='info' type='submit' disabled={isFetching}>
 					Login
 				</Button>
 				<Typography variant='p'>
 					Don't have an account? Click{' '}
-					<Link to='/register' style={{color: 'blue', textDecoration: 'none'}}>
+					<Link
+						to='/register'
+						style={{color: colors.blueAccent[600], textDecoration: 'none'}}
+					>
 						here
 					</Link>
 					.

@@ -1,14 +1,19 @@
-import {useState} from 'react';
+import {useState, useContext} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Box, TextField, Button, Paper, Typography} from '@mui/material';
+import {useTheme, Box, TextField, Button, Paper, Typography} from '@mui/material';
 
 import axios from 'axios';
 
 import {loginStart, loginSuccess, loginFailure} from '../redux/userRedux';
 
+import {tokens} from '../theme';
+
 function Register() {
+	const theme = useTheme();
+	const colors = tokens(theme.palette.mode);
+
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -66,7 +71,7 @@ function Register() {
 					display: 'flex',
 					flexDirection: 'column',
 					gap: '2rem',
-					background: 'white'
+					background: colors.primary[800]
 				}}
 			>
 				{errorMessage && (
@@ -77,6 +82,7 @@ function Register() {
 				<TextField
 					label='Username'
 					type='text'
+					color='info'
 					required
 					value={username}
 					onChange={e => setUsername(e.target.value)}
@@ -84,6 +90,7 @@ function Register() {
 				<TextField
 					label='Email'
 					type='email'
+					color='info'
 					required
 					value={email}
 					onChange={e => setEmail(e.target.value)}
@@ -91,6 +98,7 @@ function Register() {
 				<TextField
 					label='Password'
 					type='password'
+					color='info'
 					required
 					value={password}
 					onChange={e => setPassword(e.target.value)}
@@ -98,16 +106,20 @@ function Register() {
 				<TextField
 					label='Confirm Password'
 					type='password'
+					color='info'
 					required
 					value={confirmPassword}
 					onChange={e => setConfirmPassword(e.target.value)}
 				/>
-				<Button variant='contained' type='submit' disabled={isFetching}>
+				<Button variant='contained' color='info' type='submit' disabled={isFetching}>
 					Register
 				</Button>
 				<Typography variant='p'>
 					Already have an account? Click{' '}
-					<Link to='/login' style={{color: 'blue', textDecoration: 'none'}}>
+					<Link
+						to='/login'
+						style={{color: colors.blueAccent[600], textDecoration: 'none'}}
+					>
 						here
 					</Link>
 					.
