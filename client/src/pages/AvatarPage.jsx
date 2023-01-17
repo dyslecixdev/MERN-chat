@@ -2,16 +2,7 @@ import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {
-	useTheme,
-	Container,
-	Box,
-	Avatar,
-	Typography,
-	Button,
-	Modal,
-	ButtonGroup
-} from '@mui/material';
+import {useTheme, Box, Avatar, Typography, Button, Modal, ButtonGroup} from '@mui/material';
 import {Cached} from '@mui/icons-material';
 
 import axios from 'axios';
@@ -19,6 +10,8 @@ import axios from 'axios';
 import {updateUserStart, updateUserSuccess, updateUserFailure} from '../redux/userRedux';
 
 import {tokens} from '../theme';
+
+import Loader from '../assets/loader.gif';
 
 function AvatarPage() {
 	const navigate = useNavigate();
@@ -33,10 +26,12 @@ function AvatarPage() {
 	const [avatar, setAvatar] = useState('');
 	const [avatars, setAvatars] = useState([]);
 	const [reload, setReload] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 
 	// Fetches four random avatars from the Multiavatar API.
 	useEffect(() => {
+		setLoading(true);
 		const avatarArr = [];
 		for (let i = 0; i < 4; i++) {
 			const avatarImg = `https://api.multiavatar.com/${Math.round(
@@ -45,6 +40,10 @@ function AvatarPage() {
 			avatarArr.push(avatarImg);
 		}
 		setAvatars(avatarArr);
+		// Used setTimeout so the loading gif actually shows.
+		setTimeout(() => {
+			setLoading(false);
+		}, '1100');
 	}, [reload]); // This is included so that this useEffect executes every time the reload button is clicked to get new avatars.
 
 	// Sets the chosen avatar and opens the modal.
@@ -75,7 +74,7 @@ function AvatarPage() {
 	};
 
 	return (
-		<Container
+		<Box
 			sx={{
 				width: '100vw',
 				height: '100vh',
@@ -97,22 +96,34 @@ function AvatarPage() {
 					justifyContent: 'space-between'
 				}}
 			>
-				{avatars.map((avatar, idx) => (
-					<Avatar
-						key={idx}
-						alt='Avatar Image'
-						src={avatar}
-						onClick={() => handleClick(avatar)}
-						sx={{
-							width: {xs: 60, sm: 100},
-							height: {xs: 60, sm: 100},
-							cursor: 'pointer',
-							'&:hover': {
-								transform: 'scale(1.1)'
-							}
-						}}
-					/>
-				))}
+				{avatars.map((avatar, idx) =>
+					loading ? (
+						<Avatar
+							key={idx}
+							alt='Avatar Image'
+							src={Loader}
+							sx={{
+								width: {xs: 60, sm: 100},
+								height: {xs: 60, sm: 100}
+							}}
+						/>
+					) : (
+						<Avatar
+							key={idx}
+							alt='Avatar Image'
+							src={avatar}
+							onClick={() => handleClick(avatar)}
+							sx={{
+								width: {xs: 60, sm: 100},
+								height: {xs: 60, sm: 100},
+								cursor: 'pointer',
+								'&:hover': {
+									transform: 'scale(1.1)'
+								}
+							}}
+						/>
+					)
+				)}
 			</Box>
 
 			<Button
@@ -180,7 +191,7 @@ function AvatarPage() {
 					</ButtonGroup>
 				</Box>
 			</Modal>
-		</Container>
+		</Box>
 	);
 }
 

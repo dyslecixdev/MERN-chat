@@ -1,28 +1,7 @@
-import {useDispatch} from 'react-redux';
-
-import {Box, Button} from '@mui/material';
-
-import {logoutStart, logoutSuccess, logoutFailure} from '../redux/userRedux';
+import {Box} from '@mui/material';
 
 function Home() {
-	const dispatch = useDispatch();
-
-	const handleLogout = async () => {
-		dispatch(logoutStart());
-		try {
-			dispatch(logoutSuccess());
-		} catch (err) {
-			console.log(err);
-			dispatch(logoutFailure());
-		}
-	};
-
-	return (
-		<Box>
-			Home
-			<Button onClick={handleLogout}>Logout</Button>
-		</Box>
-	);
+	return <Box>Home</Box>;
 }
 
 export default Home;

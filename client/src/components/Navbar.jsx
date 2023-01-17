@@ -55,8 +55,7 @@ function Navbar() {
 					p: 2,
 					display: 'flex',
 					justifyContent: 'flex-end',
-					gap: '5px',
-					borderBottom: `1px solid ${colors.greyAccent[300]}`
+					gap: '5px'
 				}}
 			>
 				{/* Search Bar */}
