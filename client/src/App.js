@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AvatarPage from './pages/AvatarPage';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
 import {ColorModeContext, useMode} from './theme';
@@ -73,6 +74,20 @@ function App() {
 									user ? (
 										user.avatar ? (
 											<Home />
+										) : (
+											<Navigate to='/avatar' />
+										)
+									) : (
+										<Navigate to='/login' />
+									)
+								}
+							/>
+							<Route
+								path='/profile'
+								element={
+									user ? (
+										user.avatar ? (
+											<Profile />
 										) : (
 											<Navigate to='/avatar' />
 										)
