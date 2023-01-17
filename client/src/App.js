@@ -14,7 +14,7 @@ function App() {
 			<Route
 				path='/login'
 				element={
-					user ? user.avatar ? <Navigate to='/' /> : <Navigate to='/avatar' /> : <Login />
+					user ? user.avatar ? <Navigate to='/' /> : <Navigate to='/avatar' /> : <Login /> // Uses two ternarys to depending on if a user is logged in, and if the user has chosen an avatar.
 				}
 			/>
 			<Route
