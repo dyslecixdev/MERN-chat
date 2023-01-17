@@ -11,7 +11,7 @@ const generateToken = userId => {
 
 // Registers a user
 const registerUser = asyncHandler(async (req, res) => {
-	const {username, email, password, confirmPassword, isAdmin} = req.body;
+	const {username, email, password, confirmPassword, avatar, isAdmin} = req.body;
 
 	const userExists = await User.findOne({email});
 	if (userExists) return res.status(409).json('User already exists');
@@ -31,8 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
 		email,
 		password: hashedPassword,
 		confirmPassword: hashedPassword,
-		isAvatarSet: false,
-		avatar: '',
+		avatar,
 		isAdmin
 	});
 
@@ -41,6 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
 			id: newUser.id,
 			username: newUser.username,
 			email: newUser.email,
+			avatar: newUser.avatar,
 			isAdmin: newUser.isAdmin,
 			token: generateToken(newUser.id)
 		});
