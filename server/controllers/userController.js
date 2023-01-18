@@ -86,11 +86,20 @@ const getOneUser = asyncHandler(async (req, res) => {
 
 // Gets all the users
 const getAllUsers = asyncHandler(async (req, res) => {
-	const existingUsers = await User.find();
+	const {search} = req.query;
+
+	let existingUsers;
+	if (search)
+		existingUsers = await User.find(
+			{_id: {$ne: req.user.id}, username: {$regex: search}}, // Filters the documents by finding all of them with a username of the given search query.
+			{username: 1, avatar: 1} // When the documents are sent over to the client, only each user's _id, username, and avatar is shown.
+			// Sorts all the documents alphabetically.
+		).sort({username: 1});
+	else existingUsers = await User.find({_id: {$ne: req.user.id}}, {username: 1, avatar: 1}); // $ne filters out all the documents with the given _id.
+
 	if (!existingUsers) return res.status(404).json('Users not found');
 
-	if (req.user.isAdmin) res.status(200).json(existingUsers);
-	else res.status(403).json("Only an administrator can get all the users' information");
+	res.status(200).json(existingUsers);
 });
 
 // Updates user

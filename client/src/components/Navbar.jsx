@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react';
 import {Outlet, Link} from 'react-router-dom';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 import {useTheme, Box, IconButton, Badge, Menu, MenuItem} from '@mui/material';
 import {
@@ -16,8 +16,6 @@ import {ColorModeContext, tokens} from '../theme';
 
 function Navbar() {
 	const dispatch = useDispatch();
-
-	const user = useSelector(state => state.user.currentUser);
 
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
@@ -58,14 +56,6 @@ function Navbar() {
 					gap: '5px'
 				}}
 			>
-				{/* Search Bar */}
-				{/* <Box sx={{display: 'flex', background: colors.primary[400], borderRadius: '3px'}}>
-					<InputBase sx={{ml: 2, flex: 1}} placeholder='Search' />
-					<IconButton type='button' sx={{p: 1}}>
-						<Search />
-					</IconButton>
-				</Box> */}
-
 				{/* Icons */}
 				<IconButton onClick={colorMode.toggleColorMode}>
 					{theme.palette.mode === 'dark' ? <DarkModeOutlined /> : <LightModeOutlined />}
