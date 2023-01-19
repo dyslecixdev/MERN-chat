@@ -12,13 +12,12 @@ import {
 
 import {logoutStart, logoutSuccess, logoutFailure} from '../redux/userRedux';
 
-import {ColorModeContext, tokens} from '../theme';
+import {ColorModeContext} from '../theme';
 
 function Navbar() {
 	const dispatch = useDispatch();
 
 	const theme = useTheme();
-	const colors = tokens(theme.palette.mode);
 	const colorMode = useContext(ColorModeContext); // colorMode is an object holding memoized functions.
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -71,6 +70,7 @@ function Navbar() {
 					</Badge>
 				</IconButton>
 
+				{/* Profile Menu */}
 				<Menu
 					anchorEl={anchorEl}
 					anchorOrigin={{

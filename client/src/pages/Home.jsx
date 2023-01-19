@@ -1,4 +1,9 @@
+import {useState, useEffect} from 'react';
+import {useSelector} from 'react-redux';
+
 import {useTheme, Box} from '@mui/material';
+
+import {io} from 'socket.io-client';
 
 import Contacts from '../components/Contacts';
 import Welcome from '../components/Welcome';
@@ -7,10 +12,17 @@ import Chat from '../components/Chat';
 import {tokens} from '../theme';
 
 function Home() {
+	const chatRoom = useSelector(state => state.chat.userId);
+
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
-	const currChat = false;
+	const [socket, setSocket] = useState(null);
+
+	// Sets the socket to the server's localhost.
+	useEffect(() => {
+		setSocket(io('http://localhost:5000'));
+	}, []);
 
 	return (
 		<Box
@@ -34,8 +46,8 @@ function Home() {
 					borderRadius: '5px'
 				}}
 			>
-				<Contacts />
-				{currChat ? <Chat /> : <Welcome />}
+				<Contacts socket={socket} />
+				{chatRoom ? <Chat socket={socket} /> : <Welcome socket={socket} />}
 			</Box>
 		</Box>
 	);

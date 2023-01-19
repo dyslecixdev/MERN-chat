@@ -1,14 +1,26 @@
 import {useState, useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 import {useTheme, Box, InputBase, Avatar, Typography} from '@mui/material';
 
 import axios from 'axios';
 
+import {
+	joinRoomStart,
+	joinRoomSuccess,
+	joinRoomFailure,
+	leaveRoomStart,
+	leaveRoomSuccess,
+	leaveRoomFailure
+} from '../redux/chatRedux';
+
 import {tokens} from '../theme';
 
-function Contacts() {
+function Contacts({socket}) {
 	const user = useSelector(state => state.user.currentUser);
+	const chatRoom = useSelector(state => state.chat.userId);
+
+	const dispatch = useDispatch();
 
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
@@ -28,6 +40,32 @@ function Contacts() {
 		}
 		fetchUsers();
 	}, [search, user.token]);
+
+	// Emits a socket message that you have left a room, then leaves the room.
+	const handleWelcome = () => {
+		if (!socket) return;
+
+		dispatch(leaveRoomStart());
+
+		try {
+			socket.emit('leave-room-from-server', {chatRoom});
+			dispatch(leaveRoomSuccess());
+		} catch (err) {
+			console.log(err);
+			dispatch(leaveRoomFailure());
+		}
+	};
+
+	// Joins a room.
+	const handleChatRoom = userId => {
+		dispatch(joinRoomStart());
+		try {
+			dispatch(joinRoomSuccess(userId));
+		} catch (err) {
+			console.log(err);
+			dispatch(joinRoomFailure());
+		}
+	};
 
 	return (
 		<Box
@@ -88,14 +126,20 @@ function Contacts() {
 				{users.map(fetchedUser => (
 					<Box
 						key={fetchedUser._id}
+						onClick={() => handleChatRoom(fetchedUser._id)}
 						sx={{
 							m: 2,
 							p: 1,
 							display: 'flex',
 							alignItems: 'center',
 							gap: '40px',
-							background: colors.greyAccent[700],
-							borderRadius: '10px'
+							// Changes the background to green if you are in that user's chatroom.
+							background:
+								fetchedUser._id === chatRoom
+									? colors.greenAccent[500]
+									: colors.greyAccent[700],
+							borderRadius: '10px',
+							cursor: 'pointer'
 						}}
 					>
 						<Avatar
@@ -116,12 +160,14 @@ function Contacts() {
 
 			{/* User Info */}
 			<Box
+				onClick={handleWelcome}
 				sx={{
 					flex: 1,
 					display: 'flex',
 					alignItems: 'center',
 					gap: '40px',
-					background: colors.primary[700]
+					background: colors.primary[700],
+					cursor: 'pointer'
 				}}
 			>
 				<Avatar
