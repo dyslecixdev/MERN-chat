@@ -119,7 +119,7 @@ function Profile() {
 		<Box
 			sx={{
 				width: '100vw',
-				height: '90vh',
+				minHeight: '90vh',
 				display: 'flex',
 				justifyContent: 'center',
 				alignItems: 'center',

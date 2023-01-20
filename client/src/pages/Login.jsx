@@ -63,7 +63,8 @@ function Login() {
 					display: 'flex',
 					flexDirection: 'column',
 					gap: '2rem',
-					background: colors.primary[800]
+					background:
+						theme.palette.mode === 'dark' ? colors.primary[800] : colors.secondary[100]
 				}}
 			>
 				{errorMessage && (
@@ -95,7 +96,13 @@ function Login() {
 					Don't have an account? Click{' '}
 					<Link
 						to='/register'
-						style={{color: colors.blueAccent[600], textDecoration: 'none'}}
+						style={{
+							color:
+								theme.palette.mode === 'dark'
+									? colors.blueAccent[600]
+									: colors.blueAccent[400],
+							textDecoration: 'none'
+						}}
 					>
 						here
 					</Link>

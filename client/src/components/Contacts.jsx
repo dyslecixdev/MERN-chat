@@ -16,7 +16,7 @@ import {
 
 import {tokens} from '../theme';
 
-function Contacts({socket}) {
+function Contacts({socket, isNonMobile}) {
 	const user = useSelector(state => state.user.currentUser);
 	const chatRoom = useSelector(state => state.chat.userId);
 
@@ -27,6 +27,8 @@ function Contacts({socket}) {
 
 	const [users, setUsers] = useState([]);
 	const [search, setSearch] = useState('');
+
+	console.log(isNonMobile);
 
 	// Fetches all the user documents.
 	useEffect(() => {
@@ -70,9 +72,11 @@ function Contacts({socket}) {
 	return (
 		<Box
 			sx={{
-				flex: 1,
+				flex: isNonMobile && 1,
+				width: !isNonMobile && '120px',
 				display: 'flex',
 				flexDirection: 'column',
+				background: theme.palette.mode === 'light' && colors.secondary[700],
 				borderRight:
 					theme.palette.mode === 'dark'
 						? `1px solid ${colors.secondary[100]}`
@@ -86,20 +90,31 @@ function Contacts({socket}) {
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					background: colors.primary[700]
+					background:
+						theme.palette.mode === 'dark' ? colors.primary[700] : colors.greyAccent[100]
 				}}
 			>
 				<Box
 					sx={{
 						width: '80%',
 						display: 'flex',
-						background: colors.secondary[100],
+						background:
+							theme.palette.mode === 'dark'
+								? colors.secondary[100]
+								: colors.secondary[900],
 						borderRadius: '3px'
 					}}
 				>
 					<InputBase
-						sx={{ml: 2, flex: 1, color: colors.primary[900]}}
-						placeholder='Search for a user'
+						sx={{
+							ml: 2,
+							flex: 1,
+							color:
+								theme.palette.mode === 'dark'
+									? colors.primary[900]
+									: colors.primary[100]
+						}}
+						placeholder={isNonMobile ? 'Search for a user' : 'Search'}
 						value={search}
 						onChange={e => setSearch(e.target.value)}
 					/>
@@ -107,6 +122,7 @@ function Contacts({socket}) {
 			</Box>
 
 			{/* Contacts List */}
+
 			<Box
 				sx={{
 					flex: 4,
@@ -116,7 +132,10 @@ function Contacts({socket}) {
 						width: '1rem',
 						// Styles the scrollbar thumb.
 						'&-thumb': {
-							background: colors.blueAccent[600],
+							background:
+								theme.palette.mode === 'dark'
+									? colors.blueAccent[600]
+									: colors.blueAccent[400],
 							width: '0.1rem',
 							borderRadius: '1rem'
 						}
@@ -131,13 +150,16 @@ function Contacts({socket}) {
 							m: 2,
 							p: 1,
 							display: 'flex',
+							justifyContent: !isNonMobile && 'center',
 							alignItems: 'center',
-							gap: '40px',
+							gap: isNonMobile && '40px',
 							// Changes the background to green if you are in that user's chatroom.
 							background:
 								fetchedUser._id === chatRoom
 									? colors.greenAccent[500]
-									: colors.greyAccent[700],
+									: theme.palette.mode === 'dark'
+									? colors.greyAccent[700]
+									: colors.greyAccent[800],
 							borderRadius: '10px',
 							cursor: 'pointer'
 						}}
@@ -148,12 +170,14 @@ function Contacts({socket}) {
 							sx={{
 								width: {xs: 60, sm: 80},
 								height: {xs: 60, sm: 80},
-								ml: 2
+								ml: isNonMobile && 2
 							}}
 						/>
-						<Typography variant='h4' component='span'>
-							{fetchedUser.username}
-						</Typography>
+						{isNonMobile && (
+							<Typography variant='h4' component='span'>
+								{fetchedUser.username}
+							</Typography>
+						)}
 					</Box>
 				))}
 			</Box>
@@ -164,9 +188,14 @@ function Contacts({socket}) {
 				sx={{
 					flex: 1,
 					display: 'flex',
+					justifyContent: !isNonMobile && 'center',
 					alignItems: 'center',
-					gap: '40px',
-					background: colors.primary[700],
+					gap: isNonMobile && '40px',
+					background:
+						theme.palette.mode === 'dark'
+							? colors.primary[700]
+							: colors.greyAccent[100],
+					color: theme.palette.mode === 'light' && colors.secondary[900],
 					cursor: 'pointer'
 				}}
 			>
@@ -176,12 +205,14 @@ function Contacts({socket}) {
 					sx={{
 						width: {xs: 60, sm: 80},
 						height: {xs: 60, sm: 80},
-						ml: 2
+						ml: isNonMobile && 2
 					}}
 				/>
-				<Typography variant='h4' component='span'>
-					{user.username}
-				</Typography>
+				{isNonMobile && (
+					<Typography variant='h4' component='span'>
+						{user.username}
+					</Typography>
+				)}
 			</Box>
 		</Box>
 	);

@@ -155,7 +155,10 @@ function AvatarPage() {
 						display: 'flex',
 						flexDirection: 'column',
 						justifyContent: 'space-evenly',
-						background: colors.primary[500],
+						background:
+							theme.palette.mode === 'dark'
+								? colors.primary[500]
+								: colors.secondary[300],
 						border: '2px solid #000'
 					}}
 				>

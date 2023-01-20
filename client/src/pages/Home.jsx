@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 
-import {useTheme, Box} from '@mui/material';
+import {useTheme, useMediaQuery, Box} from '@mui/material';
 
 import {io} from 'socket.io-client';
 
@@ -16,6 +16,8 @@ function Home() {
 
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
+
+	const isNonMobile = useMediaQuery('(min-width:1250px)'); // If the viewport's min-width is 1250px, then isNonMobile is true.
 
 	const [socket, setSocket] = useState(null);
 
@@ -36,7 +38,7 @@ function Home() {
 		>
 			<Box
 				sx={{
-					width: '80%',
+					width: {xs: '100%', md: '80%'},
 					height: '90%',
 					display: 'flex',
 					border:
@@ -46,7 +48,7 @@ function Home() {
 					borderRadius: '5px'
 				}}
 			>
-				<Contacts socket={socket} />
+				<Contacts socket={socket} isNonMobile={isNonMobile} />
 				{chatRoom ? <Chat socket={socket} /> : <Welcome socket={socket} />}
 			</Box>
 		</Box>

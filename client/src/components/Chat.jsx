@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 
 import {useTheme, Box, InputBase, IconButton} from '@mui/material';
-import {Search} from '@mui/icons-material';
+import {ArrowCircleUp} from '@mui/icons-material';
 
 import {tokens} from '../theme';
 
@@ -22,17 +22,36 @@ function Chat({socket}) {
 	}, [socket, chatRoom]);
 
 	return (
-		<Box sx={{flex: 2, p: 1, display: 'flex', flexDirection: 'column', gap: '5px'}}>
+		<Box
+			sx={{
+				flex: 2,
+				p: 1,
+				display: 'flex',
+				flexDirection: 'column',
+				gap: '5px',
+				background: theme.palette.mode === 'light' && colors.secondary[700]
+			}}
+		>
 			{/* Message Container */}
 			<Box sx={{flex: 9}}>Message to be shown here</Box>
 
 			{/* Message Field */}
-			<Box sx={{width: '100%', p: 2, display: 'flex', justifyContent: 'space-between'}}>
+			<Box
+				sx={{
+					width: '100%',
+					p: 2,
+					display: 'flex',
+					justifyContent: 'space-between'
+				}}
+			>
 				<Box
 					sx={{
 						width: '100%',
 						display: 'flex',
-						background: colors.secondary[100],
+						background:
+							theme.palette.mode === 'dark'
+								? colors.secondary[100]
+								: colors.greyAccent[100],
 						borderRadius: '3px'
 					}}
 				>
@@ -40,10 +59,26 @@ function Chat({socket}) {
 						placeholder='Type a message'
 						value={message}
 						onChange={e => setMessage(e.target.value)}
-						sx={{ml: 2, flex: 1, color: colors.primary[900]}}
+						sx={{
+							ml: 2,
+							flex: 1,
+							color:
+								theme.palette.mode === 'dark'
+									? colors.primary[900]
+									: colors.secondary[900]
+						}}
 					/>
-					<IconButton type='button' sx={{p: 1, color: colors.primary[900]}}>
-						<Search />
+					<IconButton
+						type='button'
+						sx={{
+							p: 1,
+							color:
+								theme.palette.mode === 'dark'
+									? colors.primary[900]
+									: colors.primary[900]
+						}}
+					>
+						<ArrowCircleUp />
 					</IconButton>
 				</Box>
 			</Box>
