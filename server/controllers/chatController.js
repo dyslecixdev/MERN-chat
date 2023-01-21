@@ -36,10 +36,11 @@ const getOneChat = asyncHandler(async (req, res) => {
 // Gets all the chats this user is part of.
 const getAllChats = asyncHandler(async (req, res) => {
 	const existingChat = await Chat.find({
-		users: {$in: [req.params.id]} // $in gets all the Chat documents where req.params.id is one of the elements in its array.
+		users: {$in: [req.params.userId]} // $in gets all the Chat documents where req.params.id is one of the elements in its array.
 	});
 	if (!existingChat) return res.status(404).json('Chat not found');
 
+	// todo Find a way to protect this route.
 	res.status(200).json(existingChat);
 });
 

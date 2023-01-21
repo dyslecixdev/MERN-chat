@@ -23,7 +23,8 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors({credentials: true, origins: 'http://localhost:5000'}));
 
 app.use('/users', require('./routes/userRoute'));
-app.use('/chats', require('./routes/chatRoutes'));
+app.use('/chats', require('./routes/chatRoute'));
+app.use('/messages', require('./routes/messageRoute'));
 
 // Creates an http server using the app.
 const httpServer = http.createServer(app);
