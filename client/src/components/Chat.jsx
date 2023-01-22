@@ -6,7 +6,7 @@ import {ArrowCircleUp} from '@mui/icons-material';
 
 import {tokens} from '../theme';
 
-function Chat({socket}) {
+function Chat() {
 	const chatRoom = useSelector(state => state.chat.userId);
 
 	const theme = useTheme();
@@ -15,11 +15,11 @@ function Chat({socket}) {
 	const [message, setMessage] = useState('');
 
 	// Emit a socket message that you have joined a room.
-	useEffect(() => {
-		if (!socket) return;
+	// useEffect(() => {
+	// 	if (!socket) return;
 
-		socket.emit('join-room-from-server', {chatRoom});
-	}, [socket, chatRoom]);
+	// 	socket.emit('join-room-from-server', {chatRoom});
+	// }, [socket, chatRoom]);
 
 	return (
 		<Box

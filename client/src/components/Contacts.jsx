@@ -16,7 +16,7 @@ import {
 
 import {tokens} from '../theme';
 
-function Contacts({socket, isNonMobile}) {
+function Contacts({isNonMobile}) {
 	const user = useSelector(state => state.user.currentUser);
 	const chatRoom = useSelector(state => state.chat.userId);
 
@@ -27,8 +27,6 @@ function Contacts({socket, isNonMobile}) {
 
 	const [users, setUsers] = useState([]);
 	const [search, setSearch] = useState('');
-
-	console.log(isNonMobile);
 
 	// Fetches all the user documents.
 	useEffect(() => {
@@ -44,19 +42,19 @@ function Contacts({socket, isNonMobile}) {
 	}, [search, user.token]);
 
 	// Emits a socket message that you have left a room, then leaves the room.
-	const handleWelcome = () => {
-		if (!socket) return;
+	// const handleWelcome = () => {
+	// 	if (!socket) return;
 
-		dispatch(leaveRoomStart());
+	// 	dispatch(leaveRoomStart());
 
-		try {
-			socket.emit('leave-room-from-server', {chatRoom});
-			dispatch(leaveRoomSuccess());
-		} catch (err) {
-			console.log(err);
-			dispatch(leaveRoomFailure());
-		}
-	};
+	// 	try {
+	// 		socket.emit('leave-room-from-server', {chatRoom});
+	// 		dispatch(leaveRoomSuccess());
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 		dispatch(leaveRoomFailure());
+	// 	}
+	// };
 
 	// Joins a room.
 	const handleChatRoom = userId => {
@@ -184,7 +182,7 @@ function Contacts({socket, isNonMobile}) {
 
 			{/* User Info */}
 			<Box
-				onClick={handleWelcome}
+				// onClick={handleWelcome}
 				sx={{
 					flex: 1,
 					display: 'flex',
