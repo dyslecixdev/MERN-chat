@@ -55,8 +55,8 @@ io.on('connection', socket => {
 
 	// The user emits a send-message back to the client, then logs they sent a message.
 	socket.on('send-message-from-client', ({message, room}) => {
-		socket.to(room).emit('send-message-from-server');
-		console.log(`User sent a message: ${message} to room: ${room}`.white.bgBlack);
+		socket.to(room).emit('send-message-from-server', {message});
+		console.log(`User sent a message to room: ${room}`.white.bgBlack);
 	});
 
 	// The user emits a typing-started and the sender's id back to the client.

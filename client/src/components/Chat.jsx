@@ -48,7 +48,7 @@ function Chat({socket}) {
 			}
 		}
 		fetchOtherUserName();
-	}, [otherUser]);
+	}, [user.token, otherUser]);
 
 	// Fetches all the chatroom's messages.
 	useEffect(() => {
@@ -71,7 +71,21 @@ function Chat({socket}) {
 	useEffect(() => {
 		if (!socket.current) return;
 
-		socket.current.on('send-message-from-server', () => window.location.reload()); // Reloads your window if you are receiving a message from another user.
+		socket.current.on('send-message-from-server', ({message}) =>
+			// Updates the receiver's messages without reloading the browser.
+			setMessages(prev => [
+				...prev,
+				{
+					chatId: message.chatId,
+					createdAt: message.createdAt,
+					receiverId: message.receiverId,
+					senderId: message.senderId,
+					text: message.text,
+					updatedAt: message.updatedAt,
+					_id: message._id
+				}
+			])
+		);
 
 		socket.current.on('typing-started-from-server', ({sender}) => addSender({sender}));
 
@@ -96,7 +110,7 @@ function Chat({socket}) {
 					}
 				}
 			);
-			socket.current.emit('send-message-from-client', {message: res.data.text, room});
+			socket.current.emit('send-message-from-client', {message: res.data, room});
 			setNewMessage('');
 		} catch (err) {
 			setErrorMessage(err.response.data);
