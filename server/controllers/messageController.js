@@ -3,13 +3,14 @@ const Message = require('../models/messageModel');
 
 // Creates message.
 const createMessage = asyncHandler(async (req, res) => {
-	const {chatId, senderId, receiverId, text} = req.body;
+	const {chatId, senderId, receiverId, text, read} = req.body;
 
 	const newMessage = await Message.create({
 		chatId,
 		senderId,
 		receiverId,
-		text
+		text,
+		read
 	});
 
 	if (req.user.id === senderId || req.user.id === receiverId || req.user.isAdmin)

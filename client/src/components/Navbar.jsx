@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react';
 import {Outlet, Link} from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import {useTheme, Box, IconButton, Badge, Menu, MenuItem} from '@mui/material';
 import {
@@ -11,10 +11,13 @@ import {
 } from '@mui/icons-material';
 
 import {logoutStart, logoutSuccess, logoutFailure} from '../redux/userRedux';
+import {leaveRoomStart, leaveRoomSuccess, leaveRoomFailure} from '../redux/chatRedux';
 
 import {ColorModeContext} from '../theme';
 
 function Navbar() {
+	const unreadMessages = useSelector(state => state.message.numberOfUnread);
+
 	const dispatch = useDispatch();
 
 	const theme = useTheme();
@@ -37,11 +40,14 @@ function Navbar() {
 	// Logs the user out of the app.
 	const handleLogout = async () => {
 		dispatch(logoutStart());
+		dispatch(leaveRoomStart());
 		try {
 			dispatch(logoutSuccess());
+			dispatch(leaveRoomSuccess());
 		} catch (err) {
 			console.log(err);
 			dispatch(logoutFailure());
+			dispatch(leaveRoomFailure());
 		}
 	};
 
@@ -61,7 +67,7 @@ function Navbar() {
 				</IconButton>
 				<IconButton component={Link} to='/'>
 					{/* todo Add badge for number of unread messages */}
-					{/* <Badge badgeContent={1} color='info'> */}
+					{/* <Badge badgeContent={unreadMessages} color='error'> */}
 					<ChatBubbleOutlineOutlined />
 					{/* </Badge> */}
 				</IconButton>
