@@ -14,7 +14,7 @@ function Login() {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
-	const [username, setUsername] = useState('');
+	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 
@@ -28,7 +28,7 @@ function Login() {
 		e.preventDefault();
 		dispatch(loginStart());
 		try {
-			const res = await axios.post('http://localhost:5000/users/login', {username, password}); // Sends the username and password to the register user URL
+			const res = await axios.post('http://localhost:5000/users/login', {email, password}); // Sends the email and password to the register user URL
 			dispatch(loginSuccess(res.data)); // Sends the data as an action payload to the reducer function
 			navigate('/');
 		} catch (err) {
@@ -73,12 +73,12 @@ function Login() {
 					</Typography>
 				)}
 				<TextField
-					label='Username'
-					type='username'
+					label='Email'
+					type='email'
 					color='info'
 					required
-					value={username}
-					onChange={e => setUsername(e.target.value)}
+					value={email}
+					onChange={e => setEmail(e.target.value)}
 				/>
 				<TextField
 					label='Password'

@@ -59,15 +59,14 @@ function Navbar() {
 				<IconButton onClick={colorMode.toggleColorMode}>
 					{theme.palette.mode === 'dark' ? <DarkModeOutlined /> : <LightModeOutlined />}
 				</IconButton>
-				<IconButton component={Link} to='/' sx={{mr: '10px'}}>
-					<Badge badgeContent={1} color='info'>
-						<ChatBubbleOutlineOutlined />
-					</Badge>
+				<IconButton component={Link} to='/'>
+					{/* todo Add badge for number of unread messages */}
+					{/* <Badge badgeContent={1} color='info'> */}
+					<ChatBubbleOutlineOutlined />
+					{/* </Badge> */}
 				</IconButton>
 				<IconButton onClick={handleProfileMenuOpen}>
-					<Badge>
-						<SettingsOutlined />
-					</Badge>
+					<SettingsOutlined />
 				</IconButton>
 
 				{/* Profile Menu */}

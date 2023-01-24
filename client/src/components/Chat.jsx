@@ -22,6 +22,7 @@ function Chat({socket}) {
 	const [typing, setTyping] = useState(false);
 	const [typingTimeout, setTypingTimeout] = useState(null);
 	const [typingSender, setTypingSender] = useState(null);
+	const [otherUserName, setOtherUserName] = useState('');
 
 	// Emit a socket message that you have joined a room.
 	useEffect(() => {
@@ -31,6 +32,23 @@ function Chat({socket}) {
 
 		socket.current.emit('join-room-from-client', {room});
 	}, [socket, room]);
+
+	// Fetches the other user's username.
+	useEffect(() => {
+		async function fetchOtherUserName() {
+			try {
+				const res = await axios.get(`http://localhost:5000/users/${otherUser}`, {
+					headers: {
+						Authorization: 'Bearer ' + user.token
+					}
+				});
+				setOtherUserName(res.data.username);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+		fetchOtherUserName();
+	}, [otherUser]);
 
 	// Fetches all the chatroom's messages.
 	useEffect(() => {
@@ -124,8 +142,14 @@ function Chat({socket}) {
 				background: theme.palette.mode === 'light' && colors.secondary[700]
 			}}
 		>
+			<Box sx={{flex: 1}}>
+				<Typography variant='h3' sx={{display: 'flex', justifyContent: 'center'}}>
+					{user.username} and {otherUserName}'s chat room
+				</Typography>
+			</Box>
+
 			{/* Message Container */}
-			<Box sx={{flex: 9}}>
+			<Box sx={{flex: 8}}>
 				{messages.map(message => (
 					<Box
 						key={message._id}

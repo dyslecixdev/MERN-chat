@@ -49,9 +49,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
 // Logs in a user
 const loginUser = asyncHandler(async (req, res) => {
-	const {username, password} = req.body;
+	const {email, password} = req.body;
 
-	const existingUser = await User.findOne({username});
+	const existingUser = await User.findOne({email});
 	if (existingUser && (await bcrypt.compare(password, existingUser.password))) {
 		res.status(200).json({
 			id: existingUser.id,
@@ -69,6 +69,7 @@ const getOneUser = asyncHandler(async (req, res) => {
 	const existingUser = await User.findById(req.params.id);
 	if (!existingUser) return res.status(404).json('User not found');
 
+	// If the logged in user or admin gets a user, show all their information.
 	if (req.user.id === req.params.id || req.user.isAdmin)
 		res.status(200).json({
 			id: existingUser.id,
@@ -78,10 +79,11 @@ const getOneUser = asyncHandler(async (req, res) => {
 			isAdmin: existingUser.isAdmin,
 			token: existingUser.token
 		});
+	// Otherwise, only show their id and username.
 	else
-		res.status(401).json(
-			'Only an administrator or the logged in user can get their own information'
-		);
+		res.status(200).json({
+			username: existingUser.username
+		});
 });
 
 // Gets all the users
