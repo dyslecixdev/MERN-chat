@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useSelector} from 'react-redux';
 
 import {useTheme, useMediaQuery, Box} from '@mui/material';
@@ -12,18 +12,18 @@ import Chat from '../components/Chat';
 import {tokens} from '../theme';
 
 function Home() {
-	const chatRoom = useSelector(state => state.chat.userId);
+	const room = useSelector(state => state.chat.roomId);
 
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
+	const socket = useRef();
+
 	const isNonMobile = useMediaQuery('(min-width:1250px)'); // If the viewport's min-width is 1250px, then isNonMobile is true.
 
-	const [socket, setSocket] = useState(null);
-
-	// Sets the socket to the server's localhost.
+	// Connects the socket to the server.
 	useEffect(() => {
-		setSocket(io('http://localhost:5000'));
+		socket.current = io('http://localhost:5000');
 	}, []);
 
 	return (
@@ -49,7 +49,7 @@ function Home() {
 				}}
 			>
 				<Contacts socket={socket} isNonMobile={isNonMobile} />
-				{chatRoom ? <Chat socket={socket} /> : <Welcome socket={socket} />}
+				{room ? <Chat socket={socket} /> : <Welcome />}
 			</Box>
 		</Box>
 	);

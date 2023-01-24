@@ -3,17 +3,32 @@ import {createSlice} from '@reduxjs/toolkit';
 const chatSlice = createSlice({
 	name: 'chat',
 	initialState: {
-		userId: null,
+		otherUserId: null,
+		roomId: null,
 		isFetching: false,
 		error: false
 	},
 	reducers: {
+		createRoomStart: state => {
+			state.isFetching = true;
+			state.error = false;
+		},
+		createRoomSuccess: (state, action) => {
+			state.otherUserId = action.payload.otherUserId;
+			state.roomId = action.payload.roomId;
+			state.isFetching = false;
+		},
+		createRoomFailure: state => {
+			state.isFetching = false;
+			state.error = true;
+		},
 		joinRoomStart: state => {
 			state.isFetching = true;
 			state.error = false;
 		},
 		joinRoomSuccess: (state, action) => {
-			state.userId = action.payload;
+			state.otherUserId = action.payload.otherUserId;
+			state.roomId = action.payload.roomId;
 			state.isFetching = false;
 		},
 		joinRoomFailure: state => {
@@ -25,7 +40,8 @@ const chatSlice = createSlice({
 			state.error = false;
 		},
 		leaveRoomSuccess: state => {
-			state.userId = null;
+			state.otherUserId = null;
+			state.roomId = null;
 			state.isFetching = false;
 		},
 		leaveRoomFailure: state => {
@@ -36,6 +52,9 @@ const chatSlice = createSlice({
 });
 
 export const {
+	createRoomStart,
+	createRoomSuccess,
+	createRoomFailure,
 	joinRoomStart,
 	joinRoomSuccess,
 	joinRoomFailure,

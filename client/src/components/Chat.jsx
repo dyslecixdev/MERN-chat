@@ -1,25 +1,117 @@
 import {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 
-import {useTheme, Box, InputBase, IconButton} from '@mui/material';
+import {useTheme, Box, InputBase, IconButton, Typography} from '@mui/material';
 import {ArrowCircleUp} from '@mui/icons-material';
+
+import axios from 'axios';
 
 import {tokens} from '../theme';
 
-function Chat() {
-	const chatRoom = useSelector(state => state.chat.userId);
+function Chat({socket}) {
+	const user = useSelector(state => state.user.currentUser);
+	const otherUser = useSelector(state => state.chat.otherUserId);
+	const room = useSelector(state => state.chat.roomId);
 
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
-	const [message, setMessage] = useState('');
+	const [messages, setMessages] = useState([]);
+	const [newMessage, setNewMessage] = useState('');
+	const [errorMessage, setErrorMessage] = useState('');
+	const [typing, setTyping] = useState(false);
+	const [typingTimeout, setTypingTimeout] = useState(null);
+	const [typingSender, setTypingSender] = useState(null);
 
 	// Emit a socket message that you have joined a room.
-	// useEffect(() => {
-	// 	if (!socket) return;
+	useEffect(() => {
+		if (!socket.current) return;
 
-	// 	socket.emit('join-room-from-server', {chatRoom});
-	// }, [socket, chatRoom]);
+		if (!room) return;
+
+		socket.current.emit('join-room-from-client', {room});
+	}, [socket, room]);
+
+	// Fetches all the chatroom's messages.
+	useEffect(() => {
+		async function fetchMessages() {
+			try {
+				const res = await axios.get(`http://localhost:5000/messages/${room}`, {
+					headers: {
+						Authorization: 'Bearer ' + user.token
+					}
+				});
+				setMessages(res.data);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+		fetchMessages();
+	}, [user.id, user.token, otherUser, room, newMessage]);
+
+	// Receives socket emissions from the server.
+	useEffect(() => {
+		if (!socket.current) return;
+
+		socket.current.on('send-message-from-server', () => window.location.reload()); // Reloads your window if you are receiving a message from another user.
+
+		socket.current.on('typing-started-from-server', ({sender}) => addSender({sender}));
+
+		socket.current.on('typing-stopped-from-server', () => removeSender());
+	}, [socket]);
+
+	// Creates a message.
+	const handleSubmit = async e => {
+		e.preventDefault();
+		try {
+			const res = await axios.post(
+				'http://localhost:5000/messages',
+				{
+					chatId: room,
+					senderId: user.id,
+					receiverId: otherUser,
+					text: newMessage
+				},
+				{
+					headers: {
+						Authorization: 'Bearer ' + user.token
+					}
+				}
+			);
+			socket.current.emit('send-message-from-client', {message: res.data.text, room});
+			setNewMessage('');
+		} catch (err) {
+			setErrorMessage(err.response.data);
+			console.log(err);
+		}
+	};
+
+	// Whenever you start or stop typing, set the new message in state, then emit a message to the server.
+	const handleInput = e => {
+		setNewMessage(e.target.value);
+
+		socket.current.emit('typing-started-from-client', {room, sender: user.id});
+
+		if (typingTimeout) clearTimeout(typingTimeout);
+
+		setTypingTimeout(
+			setTimeout(() => {
+				socket.current.emit('typing-stopped-from-client', {room});
+			}, 1000)
+		);
+	};
+
+	// Sets typing to true and the typing sender as a user id.
+	const addSender = ({sender}) => {
+		setTyping(true);
+		setTypingSender(sender);
+	};
+
+	// Sets typing to false and the typing sender to null.
+	const removeSender = () => {
+		setTyping(false);
+		setTypingSender(null);
+	};
 
 	return (
 		<Box
@@ -33,7 +125,60 @@ function Chat() {
 			}}
 		>
 			{/* Message Container */}
-			<Box sx={{flex: 9}}>Message to be shown here</Box>
+			<Box sx={{flex: 9}}>
+				{messages.map(message => (
+					<Box
+						key={message._id}
+						sx={{
+							minWidth: '50%',
+							mt: 2,
+							p: 1,
+							background:
+								message.senderId === user.id
+									? colors.greenAccent[500]
+									: colors.blueAccent[500],
+							borderRadius: '10px',
+							textAlign: message.senderId === user.id ? 'left' : 'right'
+						}}
+					>
+						{message.text}
+					</Box>
+				))}
+				{typing && (
+					<Box
+						sx={{
+							width: '100%',
+							display: 'flex',
+							justifyContent: user.id === typingSender ? 'flex-start' : 'flex-end'
+						}}
+					>
+						<Box
+							sx={{
+								width: '60px',
+								height: '50px',
+								mt: 2,
+								p: 1,
+								background:
+									user.id === typingSender
+										? colors.greenAccent[500]
+										: colors.blueAccent[500],
+								borderRadius: '10px'
+							}}
+						>
+							<Typography
+								variant='h3'
+								sx={{
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center'
+								}}
+							>
+								...
+							</Typography>
+						</Box>
+					</Box>
+				)}
+			</Box>
 
 			{/* Message Field */}
 			<Box
@@ -44,7 +189,14 @@ function Chat() {
 					justifyContent: 'space-between'
 				}}
 			>
+				{errorMessage && (
+					<Typography color='error' sx={{textAlign: 'center'}}>
+						{errorMessage}
+					</Typography>
+				)}
 				<Box
+					component='form'
+					onSubmit={handleSubmit}
 					sx={{
 						width: '100%',
 						display: 'flex',
@@ -57,8 +209,8 @@ function Chat() {
 				>
 					<InputBase
 						placeholder='Type a message'
-						value={message}
-						onChange={e => setMessage(e.target.value)}
+						value={newMessage}
+						onChange={handleInput}
 						sx={{
 							ml: 2,
 							flex: 1,
@@ -69,7 +221,7 @@ function Chat() {
 						}}
 					/>
 					<IconButton
-						type='button'
+						type='submit'
 						sx={{
 							p: 1,
 							color:

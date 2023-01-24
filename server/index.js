@@ -41,15 +41,32 @@ io.on('connection', socket => {
 	console.log('User connected'.white.bgBlue);
 
 	// The user joins the room and logs it.
-	socket.on('join-room-from-server', ({chatRoom}) => {
-		socket.join(chatRoom);
-		console.log(`User joined a room with ${chatRoom}`.white.bgYellow);
+	socket.on('join-room-from-client', ({room}) => {
+		socket.join(room);
+		console.log(`User joined room: ${room}`.white.bgYellow);
 	});
 
 	// The user leaves the room and logs it.
-	socket.on('leave-room-from-server', ({chatRoom}) => {
-		socket.leave({chatRoom});
-		console.log(`User left a room with ${chatRoom}`.white.bgYellow);
+	socket.on('leave-room-from-client', ({room}) => {
+		socket.leave({room});
+		if (!room) console.log('User left the Welcome page'.white.bgMagenta);
+		else console.log(`User left room: ${room}`.white.bgMagenta);
+	});
+
+	// The user emits a send-message back to the client, then logs they sent a message.
+	socket.on('send-message-from-client', ({message, room}) => {
+		socket.to(room).emit('send-message-from-server');
+		console.log(`User sent a message: ${message} to room: ${room}`.white.bgBlack);
+	});
+
+	// The user emits a typing-started and the sender's id back to the client.
+	socket.on('typing-started-from-client', ({room, sender}) => {
+		socket.to(room).emit('typing-started-from-server', {sender});
+	});
+
+	// The user emits a typing-stopped back to the client.
+	socket.on('typing-stopped-from-client', ({room}) => {
+		socket.to(room).emit('typing-stopped-from-server');
 	});
 
 	// Logs that the user is disconnected.

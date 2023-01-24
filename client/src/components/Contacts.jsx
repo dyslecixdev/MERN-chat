@@ -6,9 +6,11 @@ import {useTheme, Box, InputBase, Avatar, Typography} from '@mui/material';
 import axios from 'axios';
 
 import {
+	createRoomStart,
+	createRoomSuccess,
+	createRoomFailure,
 	joinRoomStart,
 	joinRoomSuccess,
-	joinRoomFailure,
 	leaveRoomStart,
 	leaveRoomSuccess,
 	leaveRoomFailure
@@ -16,9 +18,10 @@ import {
 
 import {tokens} from '../theme';
 
-function Contacts({isNonMobile}) {
+function Contacts({socket, isNonMobile}) {
 	const user = useSelector(state => state.user.currentUser);
-	const chatRoom = useSelector(state => state.chat.userId);
+	const otherUser = useSelector(state => state.chat.otherUserId);
+	const room = useSelector(state => state.chat.roomId);
 
 	const dispatch = useDispatch();
 
@@ -28,43 +31,84 @@ function Contacts({isNonMobile}) {
 	const [users, setUsers] = useState([]);
 	const [search, setSearch] = useState('');
 
-	// Fetches all the user documents.
+	// Fetches all the users.
 	useEffect(() => {
 		async function fetchUsers() {
-			const res = await axios.get(`http://localhost:5000/users?search=${search}`, {
-				headers: {
-					Authorization: 'Bearer ' + user.token
-				}
-			});
-			setUsers(res.data);
+			try {
+				const res = await axios.get(`http://localhost:5000/users?search=${search}`, {
+					headers: {
+						Authorization: 'Bearer ' + user.token
+					}
+				});
+				setUsers(res.data);
+			} catch (err) {
+				console.log(err);
+			}
 		}
 		fetchUsers();
 	}, [search, user.token]);
 
-	// Emits a socket message that you have left a room, then leaves the room.
-	// const handleWelcome = () => {
-	// 	if (!socket) return;
+	// Leaves a chatroom.
+	const leaveChat = () => {
+		if (!socket.current) return;
 
-	// 	dispatch(leaveRoomStart());
+		dispatch(leaveRoomStart());
 
-	// 	try {
-	// 		socket.emit('leave-room-from-server', {chatRoom});
-	// 		dispatch(leaveRoomSuccess());
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 		dispatch(leaveRoomFailure());
-	// 	}
-	// };
-
-	// Joins a room.
-	const handleChatRoom = userId => {
-		dispatch(joinRoomStart());
 		try {
-			dispatch(joinRoomSuccess(userId));
+			socket.current.emit('leave-room-from-client', {room});
+			dispatch(leaveRoomSuccess());
 		} catch (err) {
 			console.log(err);
-			dispatch(joinRoomFailure());
+			dispatch(leaveRoomFailure());
 		}
+	};
+
+	// Creates or joins a chatroom.
+	const joinChat = otherUserId => {
+		leaveChat();
+
+		// Creates a new chatroom between two users.
+		async function createChat() {
+			dispatch(createRoomStart(otherUserId));
+			try {
+				const res = await axios.post(
+					'http://localhost:5000/chats',
+					{
+						senderId: user.id,
+						receiverId: otherUserId
+					},
+					{
+						headers: {
+							Authorization: 'Bearer ' + user.token
+						}
+					}
+				);
+				dispatch(createRoomSuccess({otherUserId, roomId: res.data._id}));
+			} catch (err) {
+				console.log(err);
+				dispatch(createRoomFailure());
+			}
+		}
+
+		// Fetches an existing chatroom between two users.
+		async function fetchChat(otherUserId) {
+			dispatch(joinRoomStart());
+			try {
+				const res = await axios.get(
+					`http://localhost:5000/chats/${user.id}/${otherUserId}`,
+					{
+						headers: {
+							Authorization: 'Bearer ' + user.token
+						}
+					}
+				);
+				dispatch(joinRoomSuccess({otherUserId, roomId: res.data._id}));
+			} catch {
+				createChat(otherUserId);
+			}
+		}
+
+		fetchChat(otherUserId);
 	};
 
 	return (
@@ -120,7 +164,6 @@ function Contacts({isNonMobile}) {
 			</Box>
 
 			{/* Contacts List */}
-
 			<Box
 				sx={{
 					flex: 4,
@@ -143,7 +186,7 @@ function Contacts({isNonMobile}) {
 				{users.map(fetchedUser => (
 					<Box
 						key={fetchedUser._id}
-						onClick={() => handleChatRoom(fetchedUser._id)}
+						onClick={() => joinChat(fetchedUser._id)}
 						sx={{
 							m: 2,
 							p: 1,
@@ -153,7 +196,7 @@ function Contacts({isNonMobile}) {
 							gap: isNonMobile && '40px',
 							// Changes the background to green if you are in that user's chatroom.
 							background:
-								fetchedUser._id === chatRoom
+								fetchedUser._id === otherUser
 									? colors.greenAccent[500]
 									: theme.palette.mode === 'dark'
 									? colors.greyAccent[700]
@@ -182,7 +225,7 @@ function Contacts({isNonMobile}) {
 
 			{/* User Info */}
 			<Box
-				// onClick={handleWelcome}
+				onClick={leaveChat}
 				sx={{
 					flex: 1,
 					display: 'flex',

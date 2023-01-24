@@ -10,6 +10,10 @@ const messageSchema = mongoose.Schema(
 			type: String,
 			required: true
 		},
+		receiverId: {
+			type: String,
+			required: true
+		},
 		text: {
 			type: String,
 			required: true

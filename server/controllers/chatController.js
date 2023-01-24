@@ -5,23 +5,27 @@ const Chat = require('../models/chatModel');
 const createChat = asyncHandler(async (req, res) => {
 	const {senderId, receiverId} = req.body;
 
-	const chatExists = await Chat.findOne({senderId, receiverId});
+	// Find in the users array the senderId and receiverId in any order.
+	const chatExists = await Chat.findOne({users: {$all: [senderId, receiverId]}});
 	if (chatExists)
 		return res.status(409).json(`Chat between ${senderId} and ${receiverId} already exists`);
+
+	if (!senderId || !receiverId) return res.status(400).json('Sender ID and Receiver ID required');
 
 	const newChat = await Chat.create({
 		users: [senderId, receiverId]
 	});
 
-	if (newChat) res.status(201).json(newChat);
-	else res.status(400).json('Invalid chat data');
+	if (req.user.id === senderId || req.user.id === receiverId || req.user.isAdmin)
+		res.status(201).json(newChat);
+	else res.status(401).json('Only an administrator or the logged in user can create a chat');
 });
 
 // Gets one chat between two users.
 const getOneChat = asyncHandler(async (req, res) => {
-	const existingChat = await Chat.findOne({
-		users: {$in: [req.params.firstId, req.params.secondId]} // $in allows the two user ids to be in any order.
-	});
+	const {firstId, secondId} = req.params;
+
+	const existingChat = await Chat.findOne({users: {$all: [firstId, secondId]}});
 	if (!existingChat) return res.status(404).json('Chat not found');
 
 	if (
@@ -40,8 +44,11 @@ const getAllChats = asyncHandler(async (req, res) => {
 	});
 	if (!existingChat) return res.status(404).json('Chat not found');
 
-	// todo Find a way to protect this route.
-	res.status(200).json(existingChat);
+	if (req.user.id === req.params.userId || req.user.isAdmin) res.status(200).json(existingChat);
+	else
+		res.status(401).json(
+			'Only an administrator or the logged in user can get all of their chats'
+		);
 });
 
 module.exports = {createChat, getOneChat, getAllChats};
