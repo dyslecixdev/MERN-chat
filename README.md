@@ -13,7 +13,7 @@ secret, express-async-handler to handle async express route exceptions, jsonwebt
 user a unique token, and socket.io to handle real-time communication. 
 
 The frontend utilizes Material-UI with Emotion for styling, axios for HTTP requests, react-redux, 
-redux-persist, and reduxjs/toolkit to manage the logged in user's state and cart, react-router-dom to 
+redux-persist, and reduxjs/toolkit to manage the logged in user's state and chat rooms, react-router-dom to 
 handle the app's web routing, Google Fonts, socket.io-client to communicate to the socket in the server, and the 
 [Multiavatar API](https://multiavatar.com/) for avatar images.
 
