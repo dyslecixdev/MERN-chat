@@ -35,11 +35,14 @@ function Contacts({socket, isNonMobile}) {
 	useEffect(() => {
 		async function fetchUsers() {
 			try {
-				const res = await axios.get(`http://localhost:5000/users?search=${search}`, {
-					headers: {
-						Authorization: 'Bearer ' + user.token
+				const res = await axios.get(
+					`https://mern-chat-backend-xm9q.onrender.com/users?search=${search}`,
+					{
+						headers: {
+							Authorization: 'Bearer ' + user.token
+						}
 					}
-				});
+				);
 				setUsers(res.data);
 			} catch (err) {
 				console.log(err);
@@ -72,7 +75,7 @@ function Contacts({socket, isNonMobile}) {
 			dispatch(createRoomStart(otherUserId));
 			try {
 				const res = await axios.post(
-					'http://localhost:5000/chats',
+					'https://mern-chat-backend-xm9q.onrender.com/chats',
 					{
 						senderId: user.id,
 						receiverId: otherUserId
@@ -95,7 +98,7 @@ function Contacts({socket, isNonMobile}) {
 			dispatch(joinRoomStart());
 			try {
 				const res = await axios.get(
-					`http://localhost:5000/chats/${user.id}/${otherUserId}`,
+					`https://mern-chat-backend-xm9q.onrender.com/chats/${user.id}/${otherUserId}`,
 					{
 						headers: {
 							Authorization: 'Bearer ' + user.token

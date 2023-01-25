@@ -23,7 +23,7 @@ function Home() {
 
 	// Connects the socket to the server.
 	useEffect(() => {
-		socket.current = io('http://localhost:5000');
+		socket.current = io('https://mern-chat-backend-xm9q.onrender.com');
 	}, []);
 
 	return (

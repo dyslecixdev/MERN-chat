@@ -74,11 +74,14 @@ function Chat({socket}) {
 	useEffect(() => {
 		async function fetchOtherUserName() {
 			try {
-				const res = await axios.get(`http://localhost:5000/users/${otherUser}`, {
-					headers: {
-						Authorization: 'Bearer ' + user.token
+				const res = await axios.get(
+					`https://mern-chat-backend-xm9q.onrender.com/users/${otherUser}`,
+					{
+						headers: {
+							Authorization: 'Bearer ' + user.token
+						}
 					}
-				});
+				);
 				setOtherUserName(res.data.username);
 			} catch (err) {
 				console.log(err);
@@ -91,11 +94,14 @@ function Chat({socket}) {
 	useEffect(() => {
 		async function fetchMessages() {
 			try {
-				const res = await axios.get(`http://localhost:5000/messages/${room}`, {
-					headers: {
-						Authorization: 'Bearer ' + user.token
+				const res = await axios.get(
+					`https://mern-chat-backend-xm9q.onrender.com/messages/${room}`,
+					{
+						headers: {
+							Authorization: 'Bearer ' + user.token
+						}
 					}
-				});
+				);
 				setMessages(res.data);
 			} catch (err) {
 				console.log(err);
@@ -122,7 +128,7 @@ function Chat({socket}) {
 		e.preventDefault();
 		try {
 			const res = await axios.post(
-				'http://localhost:5000/messages',
+				'https://mern-chat-backend-xm9q.onrender.com/messages',
 				{
 					chatId: room,
 					senderId: user.id,

@@ -28,7 +28,10 @@ function Login() {
 		e.preventDefault();
 		dispatch(loginStart());
 		try {
-			const res = await axios.post('http://localhost:5000/users/login', {email, password}); // Sends the email and password to the register user URL
+			const res = await axios.post(
+				'https://mern-chat-backend-xm9q.onrender.com/users/login',
+				{email, password}
+			); // Sends the email and password to the register user URL
 			dispatch(loginSuccess(res.data)); // Sends the data as an action payload to the reducer function
 			navigate('/');
 		} catch (err) {
