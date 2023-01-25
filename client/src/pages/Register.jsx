@@ -42,7 +42,7 @@ function Register() {
 				}
 			);
 			dispatch(loginSuccess(res.data)); // Sends the data as an action payload to the reducer function
-			navigate('http://localhost:3000/avatar');
+			navigate('https://mern-chat-frontend.onrender.com/avatar');
 		} catch (err) {
 			setErrorMessage(err.response.data); // Sets the error message from the server side
 			dispatch(loginFailure());
