@@ -34,7 +34,7 @@ const httpServer = http.createServer(app);
 // Socket.io's server takes the http server and its own cors origin to the client.
 const io = new Server(httpServer, {
 	cors: {
-		origin: ['http://localhost:3000']
+		origin: ['https://mern-chat-frontend.onrender.com/login']
 	}
 });
 

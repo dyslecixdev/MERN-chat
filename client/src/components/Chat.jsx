@@ -9,10 +9,10 @@ import axios from 'axios';
 import {
 	unreadMessageStart,
 	unreadMessageSuccess,
-	unreadMessageFailure,
-	readMessageStart,
-	readMessageSuccess,
-	readMessageFailure
+	unreadMessageFailure
+	// readMessageStart,
+	// readMessageSuccess,
+	// readMessageFailure
 } from '../redux/messageRedux';
 
 import {tokens} from '../theme';
@@ -33,7 +33,7 @@ function Chat({socket}) {
 	const [typingTimeout, setTypingTimeout] = useState(null);
 	const [typingSender, setTypingSender] = useState(null);
 	const [otherUserName, setOtherUserName] = useState('');
-	const [numberOfReadMessages, setNumberOfReadMessages] = useState(0);
+	// const [numberOfReadMessages, setNumberOfReadMessages] = useState(0);
 
 	// todo Incorporate unread message count
 	// useEffect(() => {
