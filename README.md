@@ -92,7 +92,5 @@ REACT_APP_MULTIAVATAR_KEY = Your API Access Key
 ## Bugs
 - The typing-started socket does not create the chat bubble on the deployed website, and the cause is currently unknown. (Note: There is no video since the absence of the feature is not noticeable).
 
-## [MERN Chat Demo](https://mern-chat-frontend.onrender.com/register)
-
 ## Author
 - Christian Demesa: https://github.com/christiandeandemesa
